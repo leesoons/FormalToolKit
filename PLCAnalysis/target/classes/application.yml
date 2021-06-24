@@ -1,0 +1,16 @@
+spring.thymeleaf.cache: false
+
+
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/sps2plc?characterEncoding=utf8&serverTimezone=UTC
+    username: root
+    password: "062433"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+server:
+  servlet:
+    session:
+      cookie:
+        name: RESOURCE_SESSIONID

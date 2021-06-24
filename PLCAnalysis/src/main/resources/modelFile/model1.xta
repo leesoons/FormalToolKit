@@ -1,0 +1,30 @@
+bool Q0_1, Q0_0, M0_2, M0_1, M0_0, I0_1, I0_0, T37, I0_2 ;broadcast chan VERIFY, TIMER, FORCE_TIMER;
+process Program(int t) {
+clock x;
+state
+    Init,
+    end,
+    syn1 { x <= t },
+    syn2,
+    L0,
+    L1;
+urgent
+    Init,
+    end,
+    syn2,
+    L0,
+    L1;
+init
+     Init;
+trans
+    syn2 -> Init { sync FORCE_TIMER!; },
+    end -> syn1 { sync TIMER!; assign x=0; },
+    syn1 -> syn2 { guard x == t; },
+    L1 -> end { sync VERIFY!;},
+    Init -> L0 { select I0_1e:int[0,1],I0_0e:int[0,1],I0_2e:int[0,1];assign I0_1=I0_1e,I0_0=I0_0e,I0_2=I0_2e; },
+    L0 -> L1{ assign Q0_0=(not I0_2 and (not I0_1 and (Q0_0 or I0_0))); };
+}
+process After_Until() { bool e0, e1; state in, out; init out; trans out -> in { guard I0_0 && !(I0_1  or  I0_2); sync VERIFY?; assign e0=true; }, in -> out { guard (I0_1  or  I0_2); sync VERIFY?; assign e1=true; }; }
+program1 = Program(1);
+After_Until0=After_Until();
+system program1, After_Until0;

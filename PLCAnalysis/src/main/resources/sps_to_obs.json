@@ -1,0 +1,282 @@
+[
+  {
+    "scope": "Globally, it is always the case that P holds.",
+    "obs": {
+      "name": "Global",
+      "params": [],
+      "locations": ["in"],
+      "transNum" : 2,
+      "code": "process Global() { state in; init in; }"
+    }
+  },
+  {
+    "scope": "Globally, P exists immediately.",
+    "obs": {
+      "name": "Global_once",
+      "params": [],
+      "locations": ["in", "out"],
+      "transNum" : 2,
+      "code": "process Global_once() { state in, out; init out; trans out -> in { sync VERIFY?; }, in -> out { sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "Globally, P exists immediately after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "Global_L_once",
+      "params": ["tL1, tR1"],
+      "locations": ["in", "out", "leave"],
+      "transNum" : 2,
+      "code": "process Global_L_once() { clock x; state in, out, leave; init out; trans out -> in { guard x >= tL1; sync VERIFY?; }, in -> leave { guard x > tR1; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "Globally, it is always the case that P holds after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "Global_L",
+      "params": ["tR1"],
+      "locations": ["in", "out"],
+      "transNum" : 2,
+      "code": "process Global_L() { clock x; state in, out; init out; trans out -> in { guard x >= tR1; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "Globally, it is always the case that P holds within 0(0,0) timeUnits.",
+    "obs": {
+      "name": "Global_R",
+      "params": ["tL1"],
+      "locations": ["in", "out"],
+      "transNum" : 2,
+      "code": "process Global_R() { clock x; state in, out; init in; trans in -> out { guard x >= tL1; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "Globally, it is always the case that P holds between 0(0,0) timeUnits and 0(0,0) timeUnits.",
+    "obs": {
+      "name": "Global_LR",
+      "params": ["tR1, tL2"],
+      "locations": ["in", "out", "leave"],
+      "transNum" : 2,
+      "code": "process Global_LR() { state in, out, leave; init out; trans out -> in { guard x >= tR1; sync VERIFY?; }, in -> leave { guard x > tL2; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q, it is always the case that P holds.",
+    "obs": {
+      "name": "After",
+      "params": ["<Qin>"],
+      "locations": ["out","in"],
+      "transNum" : 2,
+      "code": "process After() { state in, out; init out; trans out -> in { guard <Qin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q, P exists immediately.",
+    "obs": {
+      "name": "After_once",
+      "params": ["<Qin>"],
+      "locations": ["out","in","leave"],
+      "transNum" : 2,
+      "code": "process After_once() { state in, out, leave; init out; trans out -> in { guard <Qin>; sync VERIFY?; }, in -> leave { sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q, P exists immediately after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_L_once",
+      "params": ["<Qin>", "tL1", "tR1"],
+      "locations": ["QCome","out","in","leave"],
+      "transNum" : 2,
+      "code": "process After_once() { clock x; state QCome, in, out, leave; init out; trans out -> in { guard <Qin>; sync VERIFY?; }, QCome -> in { guard x >= tL1; sync VERIFY?; }, in -> leave { guard x > tR1; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q, it is always the case that P holds after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_L",
+      "params": ["<Qin>","tR1"],
+      "locations": ["QCome","out","in"],
+      "transNum" : 2,
+      "code": "process After_L() { clock x; state QCome, in, out; init out; trans out -> in { guard <Qin>; sync VERIFY?; assign x=0; }, QCome -> in { guard x >= tR1; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q, it is always the case that P holds within 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_R",
+      "params": ["<Qin>","tL1"],
+      "locations": ["out","in"],
+      "transNum" : 2,
+      "code": "process After_R() { bool e0, e1; clock x; state in, out; init out; trans out -> in { guard <Qin>; sync VERIFY?; assign x=0, e0=true; }, in -> out { guard x >= tL1; sync VERIFY?; assign e1=true; }; }"
+    }
+  },
+  {
+    "scope": "After Q, it is always the case that P holds between 0(0,0) timeUnits and 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_LR",
+      "params": ["<Qin>","tR1","tL2"],
+      "locations": ["QCome","out","in"],
+      "transNum" : 2,
+      "code": "process After_LR() { clock x; state QCome, in, out; init out; trans out -> QCome { guard <Qin>; sync VERIFY?; assign x=0; }, QCome -> in { guard x >= tR1; sync VERIFY?; }, in -> out { guard x > tL2; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, it is always the case that P holds.",
+    "obs": {
+      "name": "After_Until",
+      "params": ["<Qin>","<Rin>"],
+      "locations": ["out","in"],
+      "transNum" : 2,
+      "code": "process After_Until() { bool e0, e1; state in, out; init out; trans out -> in { guard <Qin> && !<Rin>; sync VERIFY?; assign e0=true; }, in -> out { guard <Rin>; sync VERIFY?; assign e1=true; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, P exists immediately.",
+    "obs": {
+      "name": "After_Until_once",
+      "params": ["<Qin>","<Rin>"],
+      "locations": ["out","in","leave"],
+      "transNum" : 2,
+      "code": "process After_Until_once() { state in, out, leave; init out; trans out -> in { guard <Qin> && !<Rin>; sync VERIFY?; }, in -> out { guard <Rin>; sync VERIFY?; }, in -> leave { guard !<Rin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, P exists immediately after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_Until_L_once",
+      "params": ["<Qin>","<Rin>","tL1","tR1"],
+      "locations": ["out","QCome","in","leave"],
+      "transNum" : 2,
+      "code": "process After_Until_L_once() { clock x; state in, out, QCome, leave; init out; trans out -> QCome { guard <Qin> && !<Rin>; sync VERIFY?; assign x=0; }, QCome -> out { guard <Rin>; sync VERIFY?; }, QCome -> in { guard x >= tL1 && !<Rin>; sync VERIFY?}, in -> leave { guard x > tR1 && !<Rin>; sync VERIFY?; }, in -> out { guard <Rin>; sync VERIFY?; }, leave -> out { guard <Rin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, it is always the case that P holds after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_Until_L",
+      "params": ["<Qin>","<Rin>","tL1","tR1"],
+      "locations": ["QCome","out","in"],
+      "transNum" : 2,
+      "code": "process After_Unit_L() { clock x; state QCome, in, out; init out; trans out -> QCome { guard <Qin> && !<Rin>; sync VERIFY?; assign x=0; }, QCome -> out { guard x <= tR1 && <Rin>; sync VERIFY?; }, QCome -> in { guard x >= tR1 && !<Rin>; sync VERIFY?; }, in -> out { guard <Rin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, it is always the case that P holds within 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_Until_R",
+      "params": ["<Qin>","<Rin>","tL1"],
+      "locations": ["out","in"],
+      "transNum" : 2,
+      "code": "process After_Unit_R() { clock x; state in, out; init out; trans out -> in { guard <Qin> && !<Rin>; sync VERIFY?; assign x=0; }, in -> out { guard x >= tL1 || <Rin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, it is always the case that P holds between 0(0,0) timeUnits and 0(0,0) timeUnits.",
+    "obs": {
+      "name": "After_Until_LR",
+      "params": ["<Qin>","<Rin>","tR1","tL2"],
+      "locations": ["QCome","out","in"],
+      "transNum" : 2,
+      "code": "process After_Unit_LR() { clock x; state QCome, in, out; init out; trans out -> QCome { guard <Qin> && !<Rin>; sync VERIFY?; assign x=0; }, QCome -> out { guard <Rin>; sync VERIFY?; }, QCome -> in { guard x >= tR1 && !<Rin>; sync VERIFY?; }, in -> out { guard <Rin> || x >= tL2; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, it is always the case that P holds and the property still holds for 0(0,0) timeUnits after the end of the scope.",
+    "obs": {
+      "name": "After_Until_RE",
+      "params": ["<Qin>","<Rin>","tL1"],
+      "locations": ["in2","out","in"],
+      "transNum" : 2,
+      "code": "process After_Unit_RE() { clock x; state in2, in, out; init out; trans out -> in { guard <Qin> && !<Rin>; sync VERIFY?; assign x=0; }, in -> in2 { guard <Rin>; sync VERIFY?; assign x=0; }, in2 -> out { guard x > tL1; sync VERIFY?; }, out -> in2 { guard <Qin> && <Rin>; sync VERIFY?; assign x=0; }; }"
+    }
+  },
+  {
+    "scope": "After Q until R, it is always the case that P holds after 0(0,0) timeUnits and the property still holds for 0(0,0) timeUnits after the end of the scope.",
+    "obs": {
+      "name": "After_Until_LRE",
+      "params": ["<Qin>","<Rin>","tR1","tR2","tL1"],
+      "locations": ["in2","out","in","QCome","RCome"],
+      "transNum" : 2,
+      "code": "process After_Unit_LRE() { clock x, y; state in2, in, out, QCome, RCome; init out; trans out -> QCome { guard <Qin> && !<Rin>; sync VERIFY?; assign x=0; }, out -> RCome { guard <Qin> && <Rin>; sync VERIFY?; assign x=0, y=0; }, QCome -> RCome { guard x < tR1 && <Rin>; sync VERIFY?; assign y=0; }, QCome -> in { guard x >= tR1 && !<Rin>; sync VERIFY?; }, QCome -> in2 { guard x >= tR1 && <Rin>; sync VERIFY?; assign y=0; }, in -> in2 { guard <Rin>; sync VERIFY?; assign y=0; }, RCome -> out { guard y >= tR2; sync VERIFY?; }, RCome -> in2 { guard x >= tR1; sync VERIFY?; }, in2 -> out { guard y >= tL2; sync VERIFY? }; }"
+    }
+  },
+  {
+    "scope": "When Q, it is always the case that P holds.",
+    "obs": {
+      "name": "When",
+      "params": ["<Qin>"],
+      "locations": ["out","in"],
+      "transNum" : 2,
+      "code": "process When() { bool e0, e1; state in, out; init out; trans out -> in { guard <Qin>; sync VERIFY?; assign e0=true; }, in -> out { guard !<Qin>; sync VERIFY?; assign e1=true; }; }"
+    }
+  },
+  {
+    "scope": "When Q, P exists immediately.",
+    "obs": {
+      "name": "When_once",
+      "params": ["<Qin>"],
+      "locations": ["out","in","leave"],
+      "transNum" : 2,
+      "code": "process When_once() { state in, out, leave; init out; trans out -> in { guard <Qin>; sync VERIFY?; }, in -> out { guard !<Qin>; sync VERIFY?; }, in -> leave { guard <Qin>; sync VERIFY?; }, leave -> out { guard !<Qin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "When Q, P exists immediately after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "When_L_once",
+      "params": ["<Qin>","tL1","tR1"],
+      "locations": ["out","QCome","in","leave"],
+      "transNum" : 2,
+      "code": "process When_L_once() { clock x; state in, out, QCome, leave; init out; trans out -> QCome { guard <Qin>; sync VERIFY?; assign x=0; }, QCome -> out { guard !<Qin>; sync VERIFY?; }, QCome -> in { guard x >= tL1 && <Qin>; sync VERIFY?}, in -> leave { guard x > tR1 && <Qin>; sync VERIFY?; }, in -> out { guard !<Qin>; sync VERIFY?; }, leave -> out { guard !<Qin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "When Q, it is always the case that P holds after 0(0,0) timeUnits.",
+    "obs": {
+      "name": "When_L",
+      "params": ["<Qin>","tL1","tR1"],
+      "locations": ["QCome","out","in"],
+      "transNum" : 2,
+      "code": "process When_L() { clock x; state QCome, in, out; init out; trans out -> QCome { guard <Qin>; sync VERIFY?; assign x=0; }, QCome -> out { guard !<Qin>; sync VERIFY?; }, QCome -> in { guard x >= tR1 && <Qin>; sync VERIFY?; }, in -> out { guard !<Qin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "When Q, it is always the case that P holds within 0(0,0) timeUnits.",
+    "obs": {
+      "name": "When_R",
+      "params": ["<Qin>","tL1"],
+      "locations": ["out","in","leave"],
+      "transNum" : 2,
+      "code": "process When_R() { clock x; state in, out, leave; init out; trans out -> in { guard <Qin>; sync VERIFY?; assign x=0; }, in -> out { guard !<Qin>; sync VERIFY?; }, in -> leave { guard x > tL1 && <Qin>; sync VERIFY?; }, leave -> out { guard !<Qin>; sync VERIFY? }; }"
+    }
+  },
+  {
+    "scope": "When Q, it is always the case that P holds between 0(0,0) timeUnits and 0(0,0) timeUnits.",
+    "obs": {
+      "name": "When_LR",
+      "params": ["<Qin>","tR1","tL2"],
+      "locations": ["QCome","out","in","leave"],
+      "transNum" : 2,
+      "code": "process When_LR() { clock x; state QCome, in, out, leave; init out; trans out -> QCome { guard <Qin>; sync VERIFY?; assign x=0; }, QCome -> out { guard !<Qin>; sync VERIFY?; }, QCome -> in { guard x >= tR1 && <Qin>; sync VERIFY?; }, in -> out { guard !<Qin>; sync VERIFY?; }, in -> leave { guard x >= tL2 && <Qin>; sync VERIFY?; }, leave -> out { guard !<Qin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "When Q, it is always the case that P holds and the property still holds for 0(0,0) timeUnits after the end of the scope.",
+    "obs": {
+      "name": "When_RE",
+      "params": ["<Qin>","tL1"],
+      "locations": ["in2","out","in"],
+      "transNum" : 2,
+      "code": "process When_RE() { clock x; state in2, in, out; init out; trans out -> in { guard <Qin>; sync VERIFY?; }, in -> in2 { guard !<Qin>; sync VERIFY?; assign x=0; }, in2 -> out { guard x > tL1 && !<Qin>; sync VERIFY?; }, in2 -> in { guard <Qin>; sync VERIFY?; }; }"
+    }
+  },
+  {
+    "scope": "When Q, it is always the case that P holds after 0(0,0) timeUnits and the property still holds for 0(0,0) timeUnits after the end of the scope.",
+    "obs": {
+      "name": "When_LRE",
+      "params": ["<Qin>","<Rin>","tR1","tL1"],
+      "locations": ["in2","out","in","QCome"],
+      "transNum" : 2,
+      "code": "process When_LRE() { clock x, y; state in2, in, out, QCome; init out; trans out -> QCome { guard <Qin>; sync VERIFY?; assign x=0; }, QCome -> out { guard !<Qin>; sync VERIFY?; }, QCome -> in { guard x >= tR1 && <Qin>; sync VERIFY?; }, in -> in2 { guard !<Qin>; sync VERIFY?; assign y=0; }, in -> in3 { guard y >= tR1 && <Qin>; sync VERIFY?; }, in2 -> in3 { guard <Qin>; sync VERIFY?; assign x=0; }, in3 -> in2 { guard y <= tL2 && !<Qin>; sync VERIFY?; }, in2 -> out { guard y >= tL2; sync VERIFY? }, in3 -> out { guard y >= tL2; sync VERIFY?; }; }"
+    }
+  }
+]

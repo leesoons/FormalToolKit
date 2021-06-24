@@ -1,0 +1,87 @@
+bool Q0_1, Q0_0, M0_2, M0_1, M0_0, I0_1, I0_0, T37, I0_2 ;broadcast chan VERIFY, TIMER, FORCE_TIMER;
+process Program(int t) {
+clock x;
+state
+    Init,
+    end,
+    syn1 { x <= t },
+    syn2,
+    L0,
+    L1,
+    L2,
+    L3,
+    L4,
+    L5,
+    L6,
+    L7,
+    L8;
+urgent
+    Init,
+    end,
+    syn2,
+    L0,
+    L1,
+    L2,
+    L3,
+    L4,
+    L5,
+    L6,
+    L7,
+    L8;
+init
+     Init;
+trans
+    syn2 -> Init { sync FORCE_TIMER!; },
+    end -> syn1 { sync TIMER!; assign x=0; },
+    syn1 -> syn2 { guard x == t; },
+    L8 -> end { sync VERIFY!;},
+    Init -> L0 { select I0_1e:int[0,1],I0_0e:int[0,1],I0_2e:int[0,1];assign I0_1=I0_1e,I0_0=I0_0e,I0_2=I0_2e; },
+    L0 -> L1{ assign Q0_0=(not I0_2 and (not I0_1 and (Q0_0 or I0_0))); },
+    L1 -> L2{ assign M0_0=(not T37 and (M0_0 or I0_1)); },
+    L2 -> L3{ assign M0_1=M0_0; },
+    L3 -> L4{ assign M0_2=Q0_0; },
+    L4 -> L5{ assign Q0_1=(not M0_2 and M0_1); },
+    L5 -> L6{ assign M0_1=M0_0; },
+    L6 -> L7{ assign M0_2=Q0_0; },
+    L7 -> L8{ assign Q0_1=(not M0_2 and M0_1); };
+}
+process TON(bool &ton, int t) {
+clock x;
+state
+    NR,
+    R,
+    TO;
+init
+    NR;
+trans
+    R -> R { guard x<t; sync TIMER?; },
+    TO -> TO { guard M0_0; sync TIMER?; },
+    TO -> NR { guard not M0_0; sync TIMER?; assign ton=false; },
+    R -> TO { guard x>=t and M0_0; sync FORCE_TIMER?; assign ton=true; },
+    R -> NR { guard not M0_0; sync TIMER?; },
+    NR -> R { guard M0_0; sync TIMER?; assign x=0; },
+    NR -> NR { guard not M0_0; sync TIMER?; };
+}
+process TON(bool &ton, int t) {
+clock x;
+state
+    NR,
+    R,
+    TO;
+init
+    NR;
+trans
+    R -> R { guard x<t; sync TIMER?; },
+    TO -> TO { guard M0_0; sync TIMER?; },
+    TO -> NR { guard not M0_0; sync TIMER?; assign ton=false; },
+    R -> TO { guard x>=t and M0_0; sync FORCE_TIMER?; assign ton=true; },
+    R -> NR { guard not M0_0; sync TIMER?; },
+    NR -> R { guard M0_0; sync TIMER?; assign x=0; },
+    NR -> NR { guard not M0_0; sync TIMER?; };
+}
+process When() { bool e0, e1; state in, out; init out; trans out -> in { guard Q0_0; sync VERIFY?; assign e0=true; }, in -> out { guard !Q0_0; sync VERIFY?; assign e1=true; }; }
+program1 = Program(1);
+ton0=TON(T37, 30);
+ton1=TON(T37, 30);
+When0=When();
+system program1, ton0, ton1, When0;
